@@ -440,8 +440,16 @@ export default function App() {
     return totals;
   }
 
+  function isMonthLocked(year, month) {
+    const now = new Date();
+    const monthIndex = MONTHS.indexOf(month);
+    const lockDate = new Date(year, monthIndex + 2, 1);
+    return now >= lockDate;
+  }
+
   function addEntry() {
     if (!form.name.trim()) return;
+    if (isMonthLocked(selectedYear, selectedMonth)) return;
     setSaving(true);
     const newEntry = {
       id: `live-${Date.now()}-${Math.random()}`,
@@ -555,6 +563,11 @@ export default function App() {
               <h2 style={{margin:"0 0 18px",fontSize:16,fontWeight:700,color:"#1e293b"}}>
                 Add Customer — {MONTH_FULL[selectedMonth]} {selectedYear}
               </h2>
+              {isMonthLocked(selectedYear, selectedMonth) && (
+                <div style={{background:"#fee2e2",border:"1px solid #fca5a5",borderRadius:6,padding:"8px 12px",marginBottom:16,fontSize:13,color:"#991b1b",fontWeight:600}}>
+                  🔒 This month is locked — no changes can be made after 2 months have passed.
+                </div>
+              )}
               {isCurrentMonthAggregate && (
                 <div style={{background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:6,padding:"8px 12px",marginBottom:16,fontSize:13,color:"#92400e"}}>
                   This month has pre-loaded historical data. New entries will be added on top of existing totals.
@@ -594,8 +607,8 @@ export default function App() {
                     placeholder="e.g. JG, JY Broker..."
                     style={{width:"100%",padding:"8px 10px",border:"1px solid #cbd5e1",borderRadius:6,fontSize:14,boxSizing:"border-box"}}/>
                 </div>
-                <button onClick={addEntry} disabled={!form.name.trim()}
-                  style={{padding:"9px 24px",background:form.name.trim()?NB_BLUE:"#94a3b8",color:"white",border:"none",borderRadius:6,fontSize:14,fontWeight:700,cursor:form.name.trim()?"pointer":"not-allowed",transition:"background 0.15s"}}>
+                <button onClick={addEntry} disabled={!form.name.trim() || isMonthLocked(selectedYear, selectedMonth)}
+                  style={{padding:"9px 24px",background:(form.name.trim()&&!isMonthLocked(selectedYear,selectedMonth))?NB_BLUE:"#94a3b8",color:"white",border:"none",borderRadius:6,fontSize:14,fontWeight:700,cursor:(form.name.trim()&&!isMonthLocked(selectedYear,selectedMonth))?"pointer":"not-allowed",transition:"background 0.15s"}}>
                   {saving ? "Adding…" : "+ Add Entry"}
                 </button>
               </div>
@@ -628,7 +641,7 @@ export default function App() {
                         <td style={{padding:"10px 16px",fontSize:13,color:"#475569"}}>{e.disposition||"—"}</td>
                         <td style={{padding:"10px 16px",fontSize:13,color:"#64748b"}}>{e.broker||"—"}</td>
                         <td style={{padding:"10px 16px"}}>
-                          <button onClick={()=>deleteEntry(e.id)} style={{background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>
+                          {!isMonthLocked(selectedYear, selectedMonth) && <button onClick={()=>deleteEntry(e.id)} style={{background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:18,lineHeight:1}}>×</button>}
                         </td>
                       </tr>
                     ))}
