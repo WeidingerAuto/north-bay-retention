@@ -1,0 +1,29 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy app file
+        run: copy /Y app.jsx src\App.jsx
+        shell: cmd
+
+      - name: Install dependencies
+        run: npm install
+        shell: cmd
+
+      - name: Build
+        run: npm run build
+        shell: cmd
+
+      - name: Deploy to IIS
+        run: xcopy /E /I /Y dist C:\inetpub\wwwroot\lease-retention
+        shell: cmd
