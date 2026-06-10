@@ -366,23 +366,19 @@ export default function App() {
 
   // Load from storage on mount
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await window.storage.get(STORAGE_KEY);
-        if (res && res.value) setLiveEntries(JSON.parse(res.value));
-      } catch(e) { /* no data yet */ }
-      setLoaded(true);
-    }
-    load();
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setLiveEntries(JSON.parse(saved));
+    } catch(e) {}
+    setLoaded(true);
   }, []);
 
   // Save to storage whenever liveEntries changes
   useEffect(() => {
     if (!loaded) return;
-    async function save() {
-      try { await window.storage.set(STORAGE_KEY, JSON.stringify(liveEntries)); } catch(e) {}
-    }
-    save();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(liveEntries));
+    } catch(e) {}
   }, [liveEntries, loaded]);
 
   // Build a unified data structure for reports
