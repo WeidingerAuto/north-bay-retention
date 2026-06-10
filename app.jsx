@@ -547,6 +547,12 @@ export default function App() {
         <span style={{marginLeft:8,fontSize:14,color:"#94a3b8"}}>
           {MONTH_FULL[selectedMonth]} {selectedYear}
         </span>
+        {(selectedMonth !== currentMonth || selectedYear !== currentYear) && (
+          <button onClick={()=>{setSelectedMonth(currentMonth);setSelectedYear(currentYear);}}
+            style={{marginLeft:12,padding:"5px 14px",background:NB_BLUE,color:"white",border:"none",borderRadius:6,fontSize:13,fontWeight:600,cursor:"pointer"}}>
+            ← This Month
+          </button>
+        )}
       </div>
 
       <main style={{maxWidth:1000,margin:"0 auto",padding:"24px 16px"}}>
