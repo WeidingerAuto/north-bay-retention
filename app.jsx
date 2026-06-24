@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { apiFetch, getUserName, signOut } from "./auth.js";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -185,7 +185,7 @@ export default function App() {
   function cancelEdit() { setEditingId(null); }
 
   function formatDate(ts) {
-    if (!ts) return "—";
+    if (!ts) return "â€”";
     const d = new Date(ts);
     return `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`;
   }
@@ -220,7 +220,7 @@ export default function App() {
   for (let y=2012; y<=2050; y++) years.push(y);
 
   return (
-    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"#38bdf8",color:"#1e293b"}}>
+    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1e85d0 0%, #0d5fa0 100%)",color:"#1e293b"}}>
       <style>{`
         @media print { .no-print { display:none!important; } body { background:white; } }
       `}</style>
@@ -228,7 +228,7 @@ export default function App() {
       {error && (
         <div style={{background:"#fee2e2",borderBottom:"2px solid #ef4444",padding:"10px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:13,color:"#991b1b",fontWeight:600}}>
           <span>Error: {error}</span>
-          <button onClick={()=>setError(null)} style={{background:"none",border:"none",color:"#991b1b",cursor:"pointer",fontSize:18,fontWeight:700,lineHeight:1}}>✕</button>
+          <button onClick={()=>setError(null)} style={{background:"none",border:"none",color:"#991b1b",cursor:"pointer",fontSize:18,fontWeight:700,lineHeight:1}}>âœ•</button>
         </div>
       )}
 
@@ -267,12 +267,12 @@ export default function App() {
           {years.map(y=><option key={y} value={y}>{y}</option>)}
         </select>
         <span style={{marginLeft:8,fontSize:14,color:"#94a3b8"}}>{MONTH_FULL[selectedMonth]} {selectedYear}</span>
-        {loading && <span style={{marginLeft:8,fontSize:12,color:"#94a3b8",fontStyle:"italic"}}>Loading…</span>}
+        {loading && <span style={{marginLeft:8,fontSize:12,color:"#94a3b8",fontStyle:"italic"}}>Loadingâ€¦</span>}
         <button
           onClick={()=>{setSelectedMonth(currentMonth);setSelectedYear(currentYear);}}
           disabled={selectedMonth===currentMonth&&selectedYear===currentYear}
           style={{marginLeft:12,padding:"6px 16px",background:(selectedMonth===currentMonth&&selectedYear===currentYear)?"#cbd5e1":NB_BLUE,color:"white",border:"none",borderRadius:6,fontSize:13,fontWeight:700,cursor:(selectedMonth===currentMonth&&selectedYear===currentYear)?"default":"pointer",transition:"background 0.15s"}}>
-          ← This Month
+          â† This Month
         </button>
       </div>
 
@@ -282,11 +282,11 @@ export default function App() {
           <div>
             <div className="no-print" style={{background:"white",borderRadius:10,border:"1px solid #38bdf8",borderTop:`3px solid ${NB_BLUE}`,padding:24,marginBottom:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
               <h2 style={{margin:"0 0 18px",fontSize:16,fontWeight:700,color:"#1e293b"}}>
-                Add Customer – {MONTH_FULL[selectedMonth]} {selectedYear}
+                Add Customer â€“ {MONTH_FULL[selectedMonth]} {selectedYear}
               </h2>
               {isMonthLocked(selectedYear, selectedMonth) && (
                 <div style={{background:"#fee2e2",border:"1px solid #fca5a5",borderRadius:6,padding:"10px 14px",marginBottom:16,fontSize:13,color:"#991b1b",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
-                  <span>🔒 This month is locked – {MONTH_FULL[selectedMonth]} {selectedYear} was locked 60 days after the end of the month.</span>
+                  <span>ðŸ”’ This month is locked â€“ {MONTH_FULL[selectedMonth]} {selectedYear} was locked 60 days after the end of the month.</span>
                   <button onClick={()=>unlockMonth(selectedYear,selectedMonth)} style={{flexShrink:0,padding:"5px 14px",background:"#991b1b",color:"white",border:"none",borderRadius:5,fontWeight:700,fontSize:12,cursor:"pointer"}}>Unlock</button>
                 </div>
               )}
@@ -312,7 +312,7 @@ export default function App() {
                   <select value={form.disposition} onChange={e=>setForm(f=>({...f,disposition:e.target.value}))}
                     style={{width:"100%",padding:"8px 10px",border:"1px solid #cbd5e1",borderRadius:6,fontSize:14}}>
                     <option value="CB">CB</option>
-                    <option value="LBB">LBB – Lease Buy Back</option>
+                    <option value="LBB">LBB â€“ Lease Buy Back</option>
                     <option value="Ground">Ground</option>
                   </select>
                 </div>
@@ -332,20 +332,20 @@ export default function App() {
                 </div>
                 <button onClick={addEntry} disabled={!form.name.trim()||isMonthLocked(selectedYear,selectedMonth)}
                   style={{padding:"9px 24px",background:(form.name.trim()&&!isMonthLocked(selectedYear,selectedMonth))?NB_BLUE:"#94a3b8",color:"white",border:"none",borderRadius:6,fontSize:14,fontWeight:700,cursor:(form.name.trim()&&!isMonthLocked(selectedYear,selectedMonth))?"pointer":"not-allowed",transition:"background 0.15s"}}>
-                  {saving?<span>Adding…</span>:"+ Add Entry"}
+                  {saving?<span>Addingâ€¦</span>:"+ Add Entry"}
                 </button>
               </div>
             </div>
 
-            <TotalsCard totals={currentTotals} ourTotals={currentOurTotals} label={`MTD – ${MONTH_FULL[selectedMonth]} ${selectedYear}`} showDisp={selectedYear>=2021}/>
+            <TotalsCard totals={currentTotals} ourTotals={currentOurTotals} label={`MTD â€“ ${MONTH_FULL[selectedMonth]} ${selectedYear}`} showDisp={selectedYear>=2021}/>
             <div style={{marginTop:16}}>
-              <TotalsCard totals={ytd} ourTotals={ytdOur} label={`YTD – Through ${MONTH_FULL[selectedMonth]} ${selectedYear}`} showDisp={selectedYear>=2021}/>
+              <TotalsCard totals={ytd} ourTotals={ytdOur} label={`YTD â€“ Through ${MONTH_FULL[selectedMonth]} ${selectedYear}`} showDisp={selectedYear>=2021}/>
             </div>
 
             {currentEntries.length > 0 && (
               <div className="no-print" style={{background:"white",borderRadius:10,border:"1px solid #38bdf8",overflow:"hidden",marginTop:20}}>
                 <div style={{padding:"14px 20px",borderBottom:"1px solid #f1f5f9",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <span style={{fontWeight:700,fontSize:15}}>Entries – {MONTH_FULL[selectedMonth]} {selectedYear}</span>
+                  <span style={{fontWeight:700,fontSize:15}}>Entries â€“ {MONTH_FULL[selectedMonth]} {selectedYear}</span>
                   <span style={{fontSize:13,color:"#64748b"}}>{currentEntries.length} entries this month</span>
                 </div>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
@@ -394,7 +394,7 @@ export default function App() {
                             </td>
                             <td style={{padding:"6px 10px",whiteSpace:"nowrap"}}>
                               <button onClick={saveEdit} style={{background:NB_BLUE,color:"white",border:"none",borderRadius:4,padding:"4px 12px",fontSize:12,fontWeight:700,cursor:"pointer",marginRight:4}}>Save</button>
-                              <button onClick={cancelEdit} style={{background:"none",border:"1px solid #cbd5e1",borderRadius:4,padding:"4px 10px",fontSize:12,cursor:"pointer",color:"#64748b"}}>✕</button>
+                              <button onClick={cancelEdit} style={{background:"none",border:"1px solid #cbd5e1",borderRadius:4,padding:"4px 10px",fontSize:12,cursor:"pointer",color:"#64748b"}}>âœ•</button>
                             </td>
                           </tr>
                         );
@@ -408,16 +408,16 @@ export default function App() {
                               {outcomeLabel[e.outcome]}
                             </span>
                           </td>
-                          <td style={{padding:"10px 16px",fontSize:13,color:"#475569"}}>{e.disposition||"—"}</td>
-                          <td style={{padding:"10px 16px",fontSize:13,color:"#64748b"}}>{e.broker||"—"}</td>
+                          <td style={{padding:"10px 16px",fontSize:13,color:"#475569"}}>{e.disposition||"â€”"}</td>
+                          <td style={{padding:"10px 16px",fontSize:13,color:"#64748b"}}>{e.broker||"â€”"}</td>
                           <td style={{padding:"10px 16px",textAlign:"center",fontSize:14}}>
                             {e.our_customer!==false
-                              ? <span style={{color:"#166534",fontWeight:700}}>✓</span>
-                              : <span style={{color:"#94a3b8"}}>—</span>}
+                              ? <span style={{color:"#166534",fontWeight:700}}>âœ“</span>
+                              : <span style={{color:"#94a3b8"}}>â€”</span>}
                           </td>
                           <td style={{padding:"10px 16px",display:"flex",gap:6,alignItems:"center"}}>
-                            {canEdit && <button onClick={()=>startEdit(e)} title="Edit" style={{background:"none",border:`1px solid ${NB_BLUE}`,color:NB_BLUE,cursor:"pointer",fontSize:13,borderRadius:4,padding:"2px 8px",fontWeight:600,lineHeight:1}}>✎</button>}
-                            {canEdit && <button onClick={()=>deleteEntry(e.id)} title="Delete" style={{background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:18,lineHeight:1}}>✕</button>}
+                            {canEdit && <button onClick={()=>startEdit(e)} title="Edit" style={{background:"none",border:`1px solid ${NB_BLUE}`,color:NB_BLUE,cursor:"pointer",fontSize:13,borderRadius:4,padding:"2px 8px",fontWeight:600,lineHeight:1}}>âœŽ</button>}
+                            {canEdit && <button onClick={()=>deleteEntry(e.id)} title="Delete" style={{background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:18,lineHeight:1}}>âœ•</button>}
                           </td>
                         </tr>
                       );
@@ -445,9 +445,9 @@ export default function App() {
                 </div>
               </div>
 
-              <ReportTotalsTable label={`Current Month – ${MONTH_FULL[selectedMonth]} ${selectedYear}`} totals={currentTotals} ourTotals={currentOurTotals} showDisp={selectedYear>=2021}/>
+              <ReportTotalsTable label={`Current Month â€“ ${MONTH_FULL[selectedMonth]} ${selectedYear}`} totals={currentTotals} ourTotals={currentOurTotals} showDisp={selectedYear>=2021}/>
               <div style={{marginTop:20}}>
-                <ReportTotalsTable label={`Year-to-Date – Through ${MONTH_FULL[selectedMonth]} ${selectedYear}`} totals={ytd} ourTotals={ytdOur} showDisp={selectedYear>=2021}/>
+                <ReportTotalsTable label={`Year-to-Date â€“ Through ${MONTH_FULL[selectedMonth]} ${selectedYear}`} totals={ytd} ourTotals={ytdOur} showDisp={selectedYear>=2021}/>
               </div>
 
               {currentEntries.length > 0 && (
@@ -472,10 +472,10 @@ export default function App() {
                               {outcomeLabel[e.outcome]}
                             </span>
                           </td>
-                          <td style={{padding:"7px 12px",color:"#475569"}}>{e.disposition||"—"}</td>
-                          <td style={{padding:"7px 12px",color:"#64748b"}}>{e.broker||"—"}</td>
+                          <td style={{padding:"7px 12px",color:"#475569"}}>{e.disposition||"â€”"}</td>
+                          <td style={{padding:"7px 12px",color:"#64748b"}}>{e.broker||"â€”"}</td>
                           <td style={{padding:"7px 12px",textAlign:"center"}}>
-                            {e.our_customer!==false?<span style={{color:"#166534",fontWeight:700}}>✓</span>:"—"}
+                            {e.our_customer!==false?<span style={{color:"#166534",fontWeight:700}}>âœ“</span>:"â€”"}
                           </td>
                         </tr>
                       ))}
@@ -497,7 +497,7 @@ export default function App() {
             <div style={{background:"white",borderRadius:10,border:"1px solid #38bdf8",overflow:"hidden",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
               <div style={{padding:"20px 24px",borderBottom:`2px solid ${NB_BLUE}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
-                  <div style={{fontWeight:800,fontSize:18,color:"#1e293b"}}>Annual Summary – {selectedYear}</div>
+                  <div style={{fontWeight:800,fontSize:18,color:"#1e293b"}}>Annual Summary â€“ {selectedYear}</div>
                   <div style={{fontSize:13,color:"#64748b"}}>North Bay Cadillac \xb7 GMC Lease Retention</div>
                 </div>
                 <div style={{fontSize:12,color:"#94a3b8"}}>Printed {new Date().toLocaleDateString()}</div>
@@ -526,15 +526,15 @@ export default function App() {
                       return (
                         <tr key={mo} style={{borderBottom:"1px solid #f1f5f9",background:i%2===0?"white":"#fafafa",opacity:hasData?1:0.4}}>
                           <td style={{padding:"10px 16px",fontWeight:600}}>{MONTH_FULL[mo]}</td>
-                          <td style={{padding:"10px 16px",textAlign:"center",color:"#166534",fontWeight:700}}>{hasData?t.a:"—"}</td>
-                          <td style={{padding:"10px 16px",textAlign:"center",color:"#991b1b",fontWeight:700}}>{hasData?t.b:"—"}</td>
-                          <td style={{padding:"10px 16px",textAlign:"center",color:"#92400e",fontWeight:700}}>{hasData?t.c:"—"}</td>
+                          <td style={{padding:"10px 16px",textAlign:"center",color:"#166534",fontWeight:700}}>{hasData?t.a:"â€”"}</td>
+                          <td style={{padding:"10px 16px",textAlign:"center",color:"#991b1b",fontWeight:700}}>{hasData?t.b:"â€”"}</td>
+                          <td style={{padding:"10px 16px",textAlign:"center",color:"#92400e",fontWeight:700}}>{hasData?t.c:"â€”"}</td>
                           {selectedYear>=2021 && <>
-                            <td style={{padding:"10px 16px",textAlign:"center",color:"#475569"}}>{hasData?(t.lbb||"—"):"—"}</td>
-                            <td style={{padding:"10px 16px",textAlign:"center",color:"#475569"}}>{hasData?(t.cb||"—"):"—"}</td>
-                            <td style={{padding:"10px 16px",textAlign:"center",color:"#475569"}}>{hasData?(t.ground||"—"):"—"}</td>
+                            <td style={{padding:"10px 16px",textAlign:"center",color:"#475569"}}>{hasData?(t.lbb||"â€”"):"â€”"}</td>
+                            <td style={{padding:"10px 16px",textAlign:"center",color:"#475569"}}>{hasData?(t.cb||"â€”"):"â€”"}</td>
+                            <td style={{padding:"10px 16px",textAlign:"center",color:"#475569"}}>{hasData?(t.ground||"â€”"):"â€”"}</td>
                           </>}
-                          <td style={{padding:"10px 16px",textAlign:"center",fontWeight:700,color:NB_BLUE}}>{hasData?total:"—"}</td>
+                          <td style={{padding:"10px 16px",textAlign:"center",fontWeight:700,color:NB_BLUE}}>{hasData?total:"â€”"}</td>
                         </tr>
                       );
                     })}
@@ -567,12 +567,12 @@ export default function App() {
       {showHelp && (
         <div onClick={()=>setShowHelp(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div onClick={e=>e.stopPropagation()} style={{background:"white",borderRadius:12,width:"100%",maxWidth:520,padding:32,boxShadow:"0 8px 32px rgba(0,0,0,0.18)",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
-            <button onClick={()=>setShowHelp(false)} style={{position:"absolute",top:14,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#94a3b8",lineHeight:1}}>✕</button>
+            <button onClick={()=>setShowHelp(false)} style={{position:"absolute",top:14,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#94a3b8",lineHeight:1}}>âœ•</button>
             <div style={{fontWeight:800,fontSize:18,color:"#1e293b",marginBottom:20}}>Quick Reference</div>
             <div style={{marginBottom:18}}>
               <div style={{fontWeight:700,fontSize:13,color:NB_BLUE,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:8}}>Outcomes</div>
               <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                {[["Renewed","#dcfce7","#166534","Customer leased again – retained"],["Returned","#fee2e2","#991b1b","Lease returned, did not buy or re-lease"],["Purchased","#fef3c7","#92400e","Customer bought their leased vehicle"]].map(([lbl,bg,color,desc])=>(
+                {[["Renewed","#dcfce7","#166534","Customer leased again â€“ retained"],["Returned","#fee2e2","#991b1b","Lease returned, did not buy or re-lease"],["Purchased","#fef3c7","#92400e","Customer bought their leased vehicle"]].map(([lbl,bg,color,desc])=>(
                   <div key={lbl} style={{display:"flex",alignItems:"center",gap:10}}>
                     <span style={{display:"inline-block",padding:"2px 12px",borderRadius:20,fontSize:12,fontWeight:700,background:bg,color,minWidth:80,textAlign:"center"}}>{lbl}</span>
                     <span style={{fontSize:13,color:"#475569"}}>{desc}</span>
@@ -583,9 +583,9 @@ export default function App() {
             <div style={{marginBottom:18}}>
               <div style={{fontWeight:700,fontSize:13,color:NB_BLUE,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:8}}>Dispositions</div>
               <div style={{display:"flex",flexDirection:"column",gap:6,fontSize:13,color:"#475569"}}>
-                <div><span style={{fontWeight:700,color:"#1e293b"}}>CB</span> – Customer Buy: customer purchased the vehicle outright</div>
-                <div><span style={{fontWeight:700,color:"#1e293b"}}>LBB</span> – Lease Buy Back: dealership bought back the lease</div>
-                <div><span style={{fontWeight:700,color:"#1e293b"}}>Ground</span> – Vehicle was grounded / turned in to the bank</div>
+                <div><span style={{fontWeight:700,color:"#1e293b"}}>CB</span> â€“ Customer Buy: customer purchased the vehicle outright</div>
+                <div><span style={{fontWeight:700,color:"#1e293b"}}>LBB</span> â€“ Lease Buy Back: dealership bought back the lease</div>
+                <div><span style={{fontWeight:700,color:"#1e293b"}}>Ground</span> â€“ Vehicle was grounded / turned in to the bank</div>
               </div>
             </div>
             <div style={{marginBottom:18}}>
