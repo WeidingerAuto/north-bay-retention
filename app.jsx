@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { apiFetch, getUserName, signOut } from "./auth.js";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const MONTH_FULL = {Jan:"January",Feb:"February",Mar:"March",Apr:"April",May:"May",Jun:"June",
@@ -32,7 +33,7 @@ export default function App() {
     loadingYears.current.add(year);
     setLoading(true);
     try {
-      const res = await fetch(`/api/entries?year=${year}`);
+      const res = await apiFetch(`/api/entries?year=${year}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setYearCache(prev => ({...prev, [year]: data}));
@@ -45,7 +46,7 @@ export default function App() {
 
   async function loadLockedMonths() {
     try {
-      const res = await fetch("/api/locked");
+      const res = await apiFetch("/api/locked");
       if (!res.ok) return;
       const data = await res.json();
       const map = {};
@@ -110,7 +111,7 @@ export default function App() {
 
   async function unlockMonth(year, month) {
     try {
-      await fetch("/api/locked", {
+      await apiFetch("/api/locked", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({year, month, is_unlocked:true}),
@@ -123,7 +124,7 @@ export default function App() {
     if (!form.name.trim() || isMonthLocked(selectedYear, selectedMonth)) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/entries", {
+      const res = await apiFetch("/api/entries", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
@@ -142,7 +143,7 @@ export default function App() {
 
   async function deleteEntry(id) {
     try {
-      const res = await fetch(`/api/entries/${id}`, {method:"DELETE"});
+      const res = await apiFetch(`/api/entries/${id}`, {method:"DELETE"});
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setYearCache(prev => ({...prev, [selectedYear]:(prev[selectedYear]||[]).filter(e=>e.id!==id)}));
     } catch(e) { setError(e.message); }
@@ -161,7 +162,7 @@ export default function App() {
     if (!editForm.name.trim()) return;
     setSaving(true);
     try {
-      const res = await fetch(`/api/entries/${editingId}`, {
+      const res = await apiFetch(`/api/entries/${editingId}`, {
         method:"PUT",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
@@ -248,6 +249,8 @@ export default function App() {
         </nav>
         <div style={{marginLeft:8,fontSize:12,color:"#94a3b8",fontWeight:600,letterSpacing:"0.5px"}}>{APP_VERSION}</div>
         <button onClick={()=>setShowHelp(true)} title="Help" style={{marginLeft:8,width:28,height:28,borderRadius:"50%",border:`1px solid ${NB_BLUE}`,background:"white",color:NB_BLUE,fontWeight:800,fontSize:14,cursor:"pointer",lineHeight:1}}>?</button>
+        <span style={{marginLeft:8,fontSize:12,color:"#94a3b8"}}>{getUserName()}</span>
+        <button onClick={signOut} style={{marginLeft:4,padding:"5px 10px",borderRadius:6,border:"1px solid #e2e8f0",background:"white",color:"#64748b",fontWeight:600,fontSize:12,cursor:"pointer"}}>Sign Out</button>
       </header>
 
       <div className="no-print" style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"10px 24px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>

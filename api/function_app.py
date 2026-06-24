@@ -3,6 +3,7 @@ import json
 import os
 import psycopg2
 import psycopg2.extras
+import requests
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -10,6 +11,22 @@ CORS_HEADERS = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
 }
+
+
+def validate_token(req: func.HttpRequest) -> bool:
+    auth = req.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        return False
+    token = auth[7:]
+    try:
+        resp = requests.get(
+            "https://graph.microsoft.com/v1.0/me",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=5,
+        )
+        return resp.status_code == 200
+    except Exception:
+        return False
 
 
 def get_conn():
@@ -46,6 +63,8 @@ def err_resp(msg, status=400):
 def get_entries(req: func.HttpRequest) -> func.HttpResponse:
     if req.method == "OPTIONS":
         return func.HttpResponse(status_code=200, headers=CORS_HEADERS)
+    if not validate_token(req):
+        return err_resp("Unauthorized", 401)
     year = req.params.get("year")
     month = req.params.get("month")
     if not year:
@@ -71,6 +90,8 @@ def get_entries(req: func.HttpRequest) -> func.HttpResponse:
 
 @app.route(route="entries", methods=["POST"])
 def create_entry(req: func.HttpRequest) -> func.HttpResponse:
+    if not validate_token(req):
+        return err_resp("Unauthorized", 401)
     try:
         body = req.get_json()
     except Exception:
@@ -108,6 +129,8 @@ def create_entry(req: func.HttpRequest) -> func.HttpResponse:
 def update_entry(req: func.HttpRequest) -> func.HttpResponse:
     if req.method == "OPTIONS":
         return func.HttpResponse(status_code=200, headers=CORS_HEADERS)
+    if not validate_token(req):
+        return err_resp("Unauthorized", 401)
     entry_id = req.route_params.get("id")
     try:
         body = req.get_json()
@@ -149,6 +172,8 @@ def update_entry(req: func.HttpRequest) -> func.HttpResponse:
 def delete_entry(req: func.HttpRequest) -> func.HttpResponse:
     if req.method == "OPTIONS":
         return func.HttpResponse(status_code=200, headers=CORS_HEADERS)
+    if not validate_token(req):
+        return err_resp("Unauthorized", 401)
     entry_id = req.route_params.get("id")
     conn = get_conn()
     try:
@@ -171,6 +196,8 @@ def delete_entry(req: func.HttpRequest) -> func.HttpResponse:
 def get_locked(req: func.HttpRequest) -> func.HttpResponse:
     if req.method == "OPTIONS":
         return func.HttpResponse(status_code=200, headers=CORS_HEADERS)
+    if not validate_token(req):
+        return err_resp("Unauthorized", 401)
     conn = get_conn()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -183,6 +210,8 @@ def get_locked(req: func.HttpRequest) -> func.HttpResponse:
 
 @app.route(route="locked", methods=["POST"])
 def set_locked(req: func.HttpRequest) -> func.HttpResponse:
+    if not validate_token(req):
+        return err_resp("Unauthorized", 401)
     try:
         body = req.get_json()
     except Exception:
