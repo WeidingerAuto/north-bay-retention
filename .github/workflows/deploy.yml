@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Azure Static Web Apps CI/CD
 
 on:
   push:
@@ -6,24 +6,20 @@ on:
       - main
 
 jobs:
-  deploy:
-    runs-on: self-hosted
+  build_and_deploy:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Copy app file
-        run: copy /Y app.jsx src\App.jsx
-        shell: cmd
+      - name: Copy app to src
+        run: cp app.jsx src/App.jsx
 
-      - name: Install dependencies
-        run: npm install
-        shell: cmd
-
-      - name: Build
-        run: npm run build
-        shell: cmd
-
-      - name: Deploy to IIS
-        run: xcopy /E /I /Y dist C:\inetpub\wwwroot\lease-retention
-        shell: cmd
+      - name: Build And Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          api_location: "api"
+          output_location: "dist"

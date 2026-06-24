@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Seed data (generated from historical app.jsx, run once locally)
+seed/excel_data.json
+api/local.settings.json
