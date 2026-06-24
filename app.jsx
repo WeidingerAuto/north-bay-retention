@@ -249,8 +249,11 @@ export default function App() {
         </nav>
         <div style={{marginLeft:8,fontSize:12,color:"#94a3b8",fontWeight:600,letterSpacing:"0.5px"}}>{APP_VERSION}</div>
         <button onClick={()=>setShowHelp(true)} title="Help" style={{marginLeft:8,width:28,height:28,borderRadius:"50%",border:`1px solid ${NB_BLUE}`,background:"white",color:NB_BLUE,fontWeight:800,fontSize:14,cursor:"pointer",lineHeight:1}}>?</button>
-        <span style={{marginLeft:8,fontSize:12,color:"#94a3b8"}}>{getUserName()}</span>
-        <button onClick={signOut} style={{marginLeft:4,padding:"5px 10px",borderRadius:6,border:"1px solid #e2e8f0",background:"white",color:"#64748b",fontWeight:600,fontSize:12,cursor:"pointer"}}>Sign Out</button>
+        <span style={{marginLeft:8,display:"flex",alignItems:"center",gap:6,fontSize:13,color:"#111827",fontWeight:500}}>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="#9ca3af" aria-hidden="true"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/></svg>
+          {getUserName()}
+        </span>
+        <button onClick={signOut} style={{marginLeft:4,padding:"5px 12px",borderRadius:6,border:"1px solid #fca5a5",background:"#fee2e2",color:"#b91c1c",fontWeight:500,fontSize:13,cursor:"pointer",whiteSpace:"nowrap"}}>Sign out</button>
       </header>
 
       <div className="no-print" style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"10px 24px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
