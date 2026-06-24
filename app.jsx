@@ -228,7 +228,7 @@ export default function App() {
       {error && (
         <div style={{background:"#fee2e2",borderBottom:"2px solid #ef4444",padding:"10px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",fontSize:13,color:"#991b1b",fontWeight:600}}>
           <span>Error: {error}</span>
-          <button onClick={()=>setError(null)} style={{background:"none",border:"none",color:"#991b1b",cursor:"pointer",fontSize:18,fontWeight:700,lineHeight:1}}>\xd7</button>
+          <button onClick={()=>setError(null)} style={{background:"none",border:"none",color:"#991b1b",cursor:"pointer",fontSize:18,fontWeight:700,lineHeight:1}}>✕</button>
         </div>
       )}
 
@@ -414,7 +414,7 @@ export default function App() {
                           </td>
                           <td style={{padding:"10px 16px",display:"flex",gap:6,alignItems:"center"}}>
                             {canEdit && <button onClick={()=>startEdit(e)} title="Edit" style={{background:"none",border:`1px solid ${NB_BLUE}`,color:NB_BLUE,cursor:"pointer",fontSize:13,borderRadius:4,padding:"2px 8px",fontWeight:600,lineHeight:1}}>✎</button>}
-                            {canEdit && <button onClick={()=>deleteEntry(e.id)} title="Delete" style={{background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:18,lineHeight:1}}>\xd7</button>}
+                            {canEdit && <button onClick={()=>deleteEntry(e.id)} title="Delete" style={{background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:18,lineHeight:1}}>✕</button>}
                           </td>
                         </tr>
                       );
@@ -564,7 +564,7 @@ export default function App() {
       {showHelp && (
         <div onClick={()=>setShowHelp(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div onClick={e=>e.stopPropagation()} style={{background:"white",borderRadius:12,width:"100%",maxWidth:520,padding:32,boxShadow:"0 8px 32px rgba(0,0,0,0.18)",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
-            <button onClick={()=>setShowHelp(false)} style={{position:"absolute",top:14,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#94a3b8",lineHeight:1}}>\xd7</button>
+            <button onClick={()=>setShowHelp(false)} style={{position:"absolute",top:14,right:16,background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#94a3b8",lineHeight:1}}>✕</button>
             <div style={{fontWeight:800,fontSize:18,color:"#1e293b",marginBottom:20}}>Quick Reference</div>
             <div style={{marginBottom:18}}>
               <div style={{fontWeight:700,fontSize:13,color:NB_BLUE,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:8}}>Outcomes</div>

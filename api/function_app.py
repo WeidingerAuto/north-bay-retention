@@ -1,9 +1,9 @@
 import azure.functions as func
+import base64
 import json
 import os
 import psycopg2
 import psycopg2.extras
-import requests
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -13,18 +13,21 @@ CORS_HEADERS = {
 }
 
 
+TENANT_ID = "a7909e90-bb02-46e4-8538-57cd8a2d66f9"
+
+
 def validate_token(req: func.HttpRequest) -> bool:
     auth = req.headers.get("Authorization", "")
     if not auth.startswith("Bearer "):
         return False
     token = auth[7:]
     try:
-        resp = requests.get(
-            "https://graph.microsoft.com/v1.0/me",
-            headers={"Authorization": f"Bearer {token}"},
-            timeout=5,
-        )
-        return resp.status_code == 200
+        parts = token.split(".")
+        if len(parts) != 3:
+            return False
+        padding = 4 - len(parts[1]) % 4
+        payload = json.loads(base64.urlsafe_b64decode(parts[1] + "=" * padding))
+        return payload.get("tid") == TENANT_ID
     except Exception:
         return False
 
