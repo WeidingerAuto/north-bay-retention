@@ -25,7 +25,7 @@ def validate_token(req: func.HttpRequest) -> bool:
         parts = token.split(".")
         if len(parts) != 3:
             return False
-        padding = 4 - len(parts[1]) % 4
+        padding = (4 - len(parts[1]) % 4) % 4
         payload = json.loads(base64.urlsafe_b64decode(parts[1] + "=" * padding))
         return payload.get("tid") == TENANT_ID
     except Exception:
