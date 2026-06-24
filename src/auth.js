@@ -17,10 +17,16 @@ export async function initAuth() {
   await msalInstance.initialize();
   const result = await msalInstance.handleRedirectPromise();
   if (result?.account) msalInstance.setActiveAccount(result.account);
-  const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+  let account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
   if (!account) {
-    await msalInstance.loginRedirect({ scopes: TOKEN_SCOPES });
-    return false;
+    try {
+      const silent = await msalInstance.ssoSilent({ scopes: TOKEN_SCOPES });
+      msalInstance.setActiveAccount(silent.account);
+      account = silent.account;
+    } catch {
+      await msalInstance.loginRedirect({ scopes: TOKEN_SCOPES });
+      return false;
+    }
   }
   if (!msalInstance.getActiveAccount()) msalInstance.setActiveAccount(account);
   return true;
