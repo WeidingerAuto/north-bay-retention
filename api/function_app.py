@@ -127,13 +127,28 @@ def create_entry(req: func.HttpRequest) -> func.HttpResponse:
         conn.close()
 
 
-@app.route(route="entries/{id}", methods=["PUT", "OPTIONS"])
-def update_entry(req: func.HttpRequest) -> func.HttpResponse:
+@app.route(route="entries/{id}", methods=["PUT", "DELETE", "OPTIONS"])
+def entry_detail(req: func.HttpRequest) -> func.HttpResponse:
     if req.method == "OPTIONS":
         return func.HttpResponse(status_code=200, headers=CORS_HEADERS)
     if not validate_token(req):
         return err_resp("Unauthorized", 401)
     entry_id = req.route_params.get("id")
+    if req.method == "DELETE":
+        conn = get_conn()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "DELETE FROM lease_entries WHERE id=%s RETURNING id",
+                    (entry_id,),
+                )
+                if not cur.fetchone():
+                    return err_resp("Entry not found", 404)
+            conn.commit()
+            return func.HttpResponse(status_code=204, headers=CORS_HEADERS)
+        finally:
+            conn.close()
+    # PUT
     try:
         body = req.get_json()
     except Exception:
@@ -149,7 +164,7 @@ def update_entry(req: func.HttpRequest) -> func.HttpResponse:
                 """UPDATE lease_entries
                    SET name=%s, outcome=%s, disposition=%s, broker=%s,
                        our_customer=%s, updated_at=NOW()
-                   WHERE id=%s AND is_historical=FALSE
+                   WHERE id=%s
                    RETURNING *""",
                 (
                     name,
@@ -162,32 +177,10 @@ def update_entry(req: func.HttpRequest) -> func.HttpResponse:
             )
             row = cur.fetchone()
             if not row:
-                return err_resp("Entry not found or is historical", 404)
+                return err_resp("Entry not found", 404)
             updated = row_to_dict(row)
         conn.commit()
         return json_resp(updated)
-    finally:
-        conn.close()
-
-
-@app.route(route="entries/{id}", methods=["DELETE", "OPTIONS"])
-def delete_entry(req: func.HttpRequest) -> func.HttpResponse:
-    if req.method == "OPTIONS":
-        return func.HttpResponse(status_code=200, headers=CORS_HEADERS)
-    if not validate_token(req):
-        return err_resp("Unauthorized", 401)
-    entry_id = req.route_params.get("id")
-    conn = get_conn()
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                "DELETE FROM lease_entries WHERE id=%s AND is_historical=FALSE RETURNING id",
-                (entry_id,),
-            )
-            if not cur.fetchone():
-                return err_resp("Entry not found or is historical", 404)
-        conn.commit()
-        return func.HttpResponse(status_code=204, headers=CORS_HEADERS)
     finally:
         conn.close()
 
