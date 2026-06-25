@@ -17,10 +17,9 @@ TENANT_ID = "a7909e90-bb02-46e4-8538-57cd8a2d66f9"
 
 
 def validate_token(req: func.HttpRequest) -> bool:
-    auth = req.headers.get("Authorization", "")
-    if not auth.startswith("Bearer "):
+    token = req.headers.get("X-Access-Token", "")
+    if not token:
         return False
-    token = auth[7:]
     try:
         parts = token.split(".")
         if len(parts) != 3:
@@ -191,23 +190,6 @@ def delete_entry(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(status_code=204, headers=CORS_HEADERS)
     finally:
         conn.close()
-
-
-# ── DEBUG (remove after diagnosis) ─────────────────────────────────────────────
-
-@app.route(route="debug", methods=["GET"])
-def debug_headers(req: func.HttpRequest) -> func.HttpResponse:
-    auth = req.headers.get("Authorization", "")
-    has_auth = len(auth) > 0
-    auth_prefix = auth[:30] if auth else "(none)"
-    parts = auth[7:].split(".") if auth.startswith("Bearer ") else []
-    return json_resp({
-        "has_authorization_header": has_auth,
-        "auth_prefix": auth_prefix,
-        "jwt_parts": len(parts),
-        "payload_len": len(parts[1]) if len(parts) > 1 else 0,
-        "payload_len_mod4": len(parts[1]) % 4 if len(parts) > 1 else -1,
-    })
 
 
 # ── LOCKED MONTHS ──────────────────────────────────────────────────────────────

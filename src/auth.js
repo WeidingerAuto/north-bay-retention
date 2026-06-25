@@ -37,7 +37,7 @@ export async function apiFetch(url, options = {}) {
   const { accessToken } = await msalInstance.acquireTokenSilent({ scopes: TOKEN_SCOPES, account });
   return fetch(url, {
     ...options,
-    headers: { ...options.headers, Authorization: `Bearer ${accessToken}` },
+    headers: { ...options.headers, 'X-Access-Token': accessToken },
   });
 }
 
