@@ -19,12 +19,17 @@ export async function initAuth() {
   if (result?.account) msalInstance.setActiveAccount(result.account);
   let account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
   if (!account) {
+    // Seamless entry from the portal: it passes the signed-in user's email as
+    // ?login_hint=… so we can silently reuse the Entra session they already have
+    // (no account picker). Falls back to a hinted redirect if the silent iframe
+    // is blocked (3rd-party cookies) — still no picker thanks to the hint.
+    const loginHint = new URLSearchParams(window.location.search).get('login_hint') || undefined;
     try {
-      const silent = await msalInstance.ssoSilent({ scopes: TOKEN_SCOPES });
+      const silent = await msalInstance.ssoSilent({ scopes: TOKEN_SCOPES, loginHint });
       msalInstance.setActiveAccount(silent.account);
       account = silent.account;
     } catch {
-      await msalInstance.loginRedirect({ scopes: TOKEN_SCOPES });
+      await msalInstance.loginRedirect({ scopes: TOKEN_SCOPES, loginHint });
       return false;
     }
   }
