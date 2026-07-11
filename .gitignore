@@ -26,3 +26,7 @@ dist-ssr
 # Seed data (generated from historical app.jsx, run once locally)
 seed/excel_data.json
 api/local.settings.json
+
+# Environment variables (contains sensitive database credentials)
+.env
+.env.local

@@ -237,6 +237,7 @@ export default function App() {
           <img src={NB_LOGO} alt="North Bay Cadillac GMC" style={{height:48,objectFit:"contain"}}/>
           <div style={{width:1,height:36,background:"#e2e8f0",margin:"0 4px"}}/>
           <div style={{fontWeight:700,fontSize:15,color:"#475569"}}>Lease Retention</div>
+          <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",marginLeft:8,paddingLeft:8,borderLeft:"1px solid #e2e8f0"}}>{APP_VERSION}</div>
         </div>
         <div style={{flex:1}}/>
         <nav style={{display:"flex",gap:4}}>
@@ -615,9 +616,9 @@ function TotalsCard({totals, ourTotals, label, showDisp}) {
       <div style={{fontWeight:700,fontSize:14,color:"#64748b",marginBottom:10,textTransform:"uppercase",letterSpacing:"0.5px"}}>{label}</div>
       <div style={{fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:8}}>All Customers</div>
       <div style={{display:"grid",gridTemplateColumns:`repeat(${showDisp?6:3},1fr)`,gap:12}}>
-        <StatBox value={totals.a} label="Renewed" color="#166534" bg="#dcfce7"/>
-        <StatBox value={totals.b} label="Returned" color="#991b1b" bg="#fee2e2"/>
-        <StatBox value={totals.c} label="Purchased" color="#92400e" bg="#fef3c7"/>
+        <StatBox value={totals.a} label="Renewed" color="#166534" bg="#dcfce7" percent={total > 0 ? Math.round(totals.a/total*100) : 0}/>
+        <StatBox value={totals.b} label="Returned" color="#991b1b" bg="#fee2e2" percent={total > 0 ? Math.round(totals.b/total*100) : 0}/>
+        <StatBox value={totals.c} label="Purchased" color="#92400e" bg="#fef3c7" percent={total > 0 ? Math.round(totals.c/total*100) : 0}/>
         {showDisp && <>
           <StatBox value={totals.lbb||0} label="LBB" color="#1e40af" bg="#dbeafe"/>
           <StatBox value={totals.cb||0} label="CB" color="#5b21b6" bg="#ede9fe"/>
@@ -627,15 +628,14 @@ function TotalsCard({totals, ourTotals, label, showDisp}) {
       <div style={{marginTop:8,paddingTop:8,borderTop:"1px solid #f1f5f9",display:"flex",gap:8,alignItems:"center"}}>
         <span style={{fontSize:12,color:"#94a3b8"}}>Total:</span>
         <span style={{fontSize:18,fontWeight:800,color:"#1e293b"}}>{total}</span>
-        {total>0 && <span style={{fontSize:12,color:"#94a3b8",marginLeft:8}}>{Math.round(totals.a/total*100)}% Renewed \xb7 {Math.round(totals.b/total*100)}% Returned \xb7 {Math.round(totals.c/total*100)}% Purchased</span>}
       </div>
       {ourTotals && ourTotal!==null && (
         <>
           <div style={{borderTop:"1px dashed #bae6fd",margin:"14px 0 8px",fontSize:10,fontWeight:700,color:"#0369a1",textTransform:"uppercase",letterSpacing:"0.5px"}}>Our Customers</div>
           <div style={{display:"grid",gridTemplateColumns:`repeat(${showDisp?6:3},1fr)`,gap:12}}>
-            <StatBox value={ourTotals.a} label="Renewed" color="#166534" bg="#dcfce7"/>
-            <StatBox value={ourTotals.b} label="Returned" color="#991b1b" bg="#fee2e2"/>
-            <StatBox value={ourTotals.c} label="Purchased" color="#92400e" bg="#fef3c7"/>
+            <StatBox value={ourTotals.a} label="Renewed" color="#166534" bg="#dcfce7" percent={ourTotal > 0 ? Math.round(ourTotals.a/ourTotal*100) : 0}/>
+            <StatBox value={ourTotals.b} label="Returned" color="#991b1b" bg="#fee2e2" percent={ourTotal > 0 ? Math.round(ourTotals.b/ourTotal*100) : 0}/>
+            <StatBox value={ourTotals.c} label="Purchased" color="#92400e" bg="#fef3c7" percent={ourTotal > 0 ? Math.round(ourTotals.c/ourTotal*100) : 0}/>
             {showDisp && <>
               <StatBox value={ourTotals.lbb||0} label="LBB" color="#1e40af" bg="#dbeafe"/>
               <StatBox value={ourTotals.cb||0} label="CB" color="#5b21b6" bg="#ede9fe"/>
@@ -645,7 +645,6 @@ function TotalsCard({totals, ourTotals, label, showDisp}) {
           <div style={{marginTop:8,paddingTop:8,borderTop:"1px solid #f1f5f9",display:"flex",gap:8,alignItems:"center"}}>
             <span style={{fontSize:12,color:"#0369a1"}}>Our Total:</span>
             <span style={{fontSize:18,fontWeight:800,color:"#0369a1"}}>{ourTotal}</span>
-            {ourTotal>0 && <span style={{fontSize:12,color:"#94a3b8",marginLeft:8}}>{Math.round(ourTotals.a/ourTotal*100)}% Renewed \xb7 {Math.round(ourTotals.b/ourTotal*100)}% Returned \xb7 {Math.round(ourTotals.c/ourTotal*100)}% Purchased</span>}
           </div>
         </>
       )}
@@ -653,11 +652,12 @@ function TotalsCard({totals, ourTotals, label, showDisp}) {
   );
 }
 
-function StatBox({value, label, color, bg}) {
+function StatBox({value, label, color, bg, percent}) {
   return (
     <div style={{background:bg,borderRadius:8,padding:"12px 14px",textAlign:"center"}}>
       <div style={{fontSize:26,fontWeight:800,color,lineHeight:1}}>{value}</div>
       <div style={{fontSize:11,fontWeight:600,color,marginTop:4,textTransform:"uppercase",letterSpacing:"0.5px"}}>{label}</div>
+      {percent !== undefined && <div style={{fontSize:10,fontWeight:700,color,marginTop:6,opacity:0.8}}>{percent}%</div>}
     </div>
   );
 }
