@@ -657,7 +657,7 @@ function StatBox({value, label, color, bg, percent}) {
     <div style={{background:bg,borderRadius:8,padding:"12px 14px",textAlign:"center"}}>
       <div style={{fontSize:26,fontWeight:800,color,lineHeight:1}}>{value}</div>
       <div style={{fontSize:11,fontWeight:600,color,marginTop:4,textTransform:"uppercase",letterSpacing:"0.5px"}}>{label}</div>
-      {percent !== undefined && <div style={{fontSize:10,fontWeight:700,color,marginTop:6,opacity:0.8}}>{percent}%</div>}
+      {percent !== undefined && <div style={{fontSize:13,fontWeight:800,color,marginTop:6}}>{percent}%</div>}
     </div>
   );
 }
