@@ -155,6 +155,7 @@ def entry_detail(req: func.HttpRequest) -> func.HttpResponse:
         return err_resp("Invalid JSON")
     name = (body.get("name") or "").strip()
     outcome = body.get("outcome")
+    created_at = body.get("created_at")
     if not name or outcome not in ("A", "B", "C"):
         return err_resp("name and valid outcome required")
     conn = get_conn()
@@ -163,7 +164,7 @@ def entry_detail(req: func.HttpRequest) -> func.HttpResponse:
             cur.execute(
                 """UPDATE lease_entries
                    SET name=%s, outcome=%s, disposition=%s, broker=%s,
-                       our_customer=%s, updated_at=NOW()
+                       our_customer=%s, created_at=COALESCE(%s, created_at), updated_at=NOW()
                    WHERE id=%s
                    RETURNING *""",
                 (
@@ -172,6 +173,7 @@ def entry_detail(req: func.HttpRequest) -> func.HttpResponse:
                     body.get("disposition") or "",
                     (body.get("broker") or "").strip(),
                     bool(body.get("our_customer", True)),
+                    created_at,
                     entry_id,
                 ),
             )
