@@ -52,5 +52,18 @@ export function getUserName() {
 }
 
 export function signOut() {
-  msalInstance.logoutRedirect();
+  // Clear MSAL's local session WITHOUT the top-level redirect to Entra's logout
+  // endpoint (onRedirectNavigate:false), then end the Entra session best-effort
+  // in a hidden iframe (front-channel logout). A top-level logout can strand the
+  // user on an AADSTS900561 Microsoft error page when the AAD session state is
+  // stale; the iframe stalls invisibly instead, and this tab always returns
+  // home, where initAuth() re-prompts a fresh sign-in. Mirrors wag-portal.
+  msalInstance.logoutRedirect({ onRedirectNavigate: () => false }).catch(() => {});
+  const home = window.location.origin + '/';
+  const f = document.createElement('iframe');
+  f.style.display = 'none';
+  f.src = 'https://login.microsoftonline.com/' + TENANT_ID +
+    '/oauth2/v2.0/logout?post_logout_redirect_uri=' + encodeURIComponent(home);
+  document.body.appendChild(f);
+  setTimeout(() => { window.location.href = '/'; }, 1500);
 }
