@@ -52,18 +52,14 @@ export function getUserName() {
 }
 
 export function signOut() {
-  // Clear MSAL's local session WITHOUT the top-level redirect to Entra's logout
-  // endpoint (onRedirectNavigate:false), then end the Entra session best-effort
-  // in a hidden iframe (front-channel logout). A top-level logout can strand the
-  // user on an AADSTS900561 Microsoft error page when the AAD session state is
-  // stale; the iframe stalls invisibly instead, and this tab always returns
-  // home, where initAuth() re-prompts a fresh sign-in. Mirrors wag-portal.
-  msalInstance.logoutRedirect({ onRedirectNavigate: () => false }).catch(() => {});
-  const home = window.location.origin + '/';
-  const f = document.createElement('iframe');
-  f.style.display = 'none';
-  f.src = 'https://login.microsoftonline.com/' + TENANT_ID +
-    '/oauth2/v2.0/logout?post_logout_redirect_uri=' + encodeURIComponent(home);
-  document.body.appendChild(f);
-  setTimeout(() => { window.location.href = '/'; }, 1500);
+  // Full sign-out for a shared showroom machine. A hidden-iframe hop to Entra's
+  // logout endpoint canNOT end the Entra SSO session: browsers withhold Entra's
+  // cookies from a third-party iframe, so the request no-ops and the next
+  // ssoSilent logs the same user right back in (the "sign-out does nothing" bug).
+  // Only a TOP-LEVEL redirect to the logout endpoint clears the Entra session
+  // cookie. logoutRedirect does exactly that (and clears MSAL's local cache
+  // first); postLogoutRedirectUri is the registered app origin, so the browser
+  // lands back on a fresh sign-in. No strand risk now that the origin is a
+  // registered post-logout redirect URI.
+  msalInstance.logoutRedirect({ postLogoutRedirectUri: window.location.origin + '/' });
 }
