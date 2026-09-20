@@ -59,3 +59,15 @@ locked_months  (year INT, month VARCHAR(3), is_unlocked BOOLEAN, PRIMARY KEY(yea
 
 ## Migration/seed scripts (`scripts/`)
 One-off historical-data tooling, not part of the app runtime: `migrate_excel.py`, `migrate_localstorage.py`, `fix_timestamps.py`, `fix_july_2023_timestamps.sql`.
+
+## Weekly management blurb
+
+After any user-facing bug fix, feature modification, or new feature in this repo, write a short
+blurb for the Weidinger Auto Group weekly management report - format and location in
+E:\Obsidian\Weidinger Projects\14 - Management Updates\README.md; full convention in
+E:\Obsidian\Weidinger Projects\CLAUDE.md ("Management Progress Tracking"). In short: the
+transcript, claude-handoff, and update skills write this automatically as part of their normal
+steps - nothing extra to do beyond using them as usual. Skip it only for sessions with no
+user-facing effect (pure docs, planning, internal tooling). This pointer exists here because this
+repo is its own git repo, so a session working in it directly won't automatically inherit the
+vault-root CLAUDE.md.
